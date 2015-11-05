@@ -58,144 +58,156 @@ OnDraw(function(myHero)
 OnTick(function(myHero)
 
 	local target  = GetCurrentTarget()
+	local QPred   = GetPredictionForPlayer(myHeroPos(),target,GetMoveSpeed(target),2000,250,1050,75,true,false)
 
-	-- COMBO
-	if IOW:Mode() == "Combo" then
+		-- COMBO
+		if IOW:Mode() == "Combo" then
 
-		local QPred   = GetPredictionForPlayer(myHeroPos(),target,GetMoveSpeed(target),2000,250,1050,75,true,false)
-		local WRange  = 325
-		local WbRange = 805
-		local wUsed   = false
 
-		-- AUTO CAST Q
-		if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 and MundoMenu.Combo.Q:Value() then
-			CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-		end
+			local WRange  = 325
+			local WbRange = 805
+			local wUsed   = false
 
-		-- AUTO CAST W
-		if GotBuff(myHero, "BurningAgony") ~= 1 then
-			if CanUseSpell(myHero, _W) == READY and ValidTarget(target, 325) then
-				CastTargetSpell(myHero, _W)
+			-- AUTO CAST Q
+			if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 and MundoMenu.Combo.Q:Value() then
+				CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
 			end
-		end
 
-		if GotBuff(myHero, "BurningAgony") == 1 then
-			if CanUseSpell(myHero, _W) == READY and GetDistance(myHero, target) >= 600 or ValidTarget(target, 325) == nil then
-				CastTargetSpell(myHero, _W)
+			-- AUTO CAST W
+			if GotBuff(myHero, "BurningAgony") ~= 1 then
+				if CanUseSpell(myHero, _W) == READY and ValidTarget(target, 325) then
+					CastTargetSpell(myHero, _W)
+				end
 			end
-		end
 
-		-- AUTO CAST E
-		if CanUseSpell(myHero, _E) == READY and ValidTarget(target, 200) and MundoMenu.Combo.E:Value() then
-			CastSpell(_E)
-		end
-
-		-- AUTO CAST R
-		local minhaHP = GetCurrentHP(myHero)
-		if  minhaHP < (GetMaxHP(myHero)*(20*0.01)) then
-			if CanUseSpell(myHero, _R) then
-				CastSpell(_R)
+			if GotBuff(myHero, "BurningAgony") == 1 then
+				if CanUseSpell(myHero, _W) == READY and GetDistance(myHero, target) >= 600 or ValidTarget(target, 325) == nil then
+					CastTargetSpell(myHero, _W)
+				end
 			end
-		end
 
-	end
-
-	-- HARASS
-	if IOW:Mode() == "Harass" then
-		-- AUTO CAST Q
-		if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 then
-			CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-		end
-		-- AUTO CAST E
-		if CanUseSpell(myHero, _E) == READY and ValidTarget(target, 200) and MundoMenu.Combo.E:Value() then
-			CastSpell(_E)
-		end
-
-	end
-
-	-- AUTO IGNITE | KILL STEAL
-	for i,enemy in pairs(GetEnemyHeroes()) do
-
-		if Ignite and MundoMenu.Misc.Autoignite:Value() then
-			if IsReady(Ignite) and 20*GetLevel(myHero)+50 > GetHP(enemy)+GetHPRegen(enemy)*2.5 and ValidTarget(enemy, 600) then
-				CastTargetSpell(enemy, Ignite)
-			end
-		end
-
-		if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 and MundoMenu.Killsteal.Q:Value() and GetHP2(enemy) < getdmg("Q",enemy) then
-			CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-			elseif CanUseSpell(myHero, _E) == READY and ValidTarget(enemy, 200) and MundoMenu.Killsteal.E:Value() and GetHP2(enemy) < getdmg("E",enemy) then
+			-- AUTO CAST E
+			if CanUseSpell(myHero, _E) == READY and ValidTarget(target, 200) and MundoMenu.Combo.E:Value() then
 				CastSpell(_E)
 			end
 
-		end
-
-	end
-
-	-- LANE CLEAR
-	if IOW:Mode() == "LaneClear" then
-		local closeminion = ClosestMinion(GetOrigin(myHero), MINION_ENEMY)
-
-		if CanUseSpell(myHero, _Q) == READY and MundoMenu.LaneClear.Q:Value() then
-			if GetCurrentHP(closeminion) < getdmg("Q",closeminion) and ValidTarget(closestminion, 1000) then
-				CastSkillShot(_Q, GetOrigin(closeminion))
-			end
-		end
-
-		if GotBuff(myHero, "BurningAgony") ~= 1 then
-			if CanUseSpell(myHero, _W) == READY and ValidTarget(closestminion, 325) and MundoMenu.LaneClear.W:Value() then
-				CastSpell(_W)
-			end
-		end
-
-		if GotBuff(myHero, "BurningAgony") == 1 then
-			if CanUseSpell(myHero, _W) == READY and GetDistance(myHero, closeminion) >= 500 or ValidTarget(closestminion, 325) == nil and MundoMenu.LaneClear.W:Value() then
-				CastSpell(_W)
-			end
-		end
-
-		if CanUseSpell(myHero, _E) == READY and MundoMenu.LaneClear.E:Value() then
-			if GetCurrentHP(closeminion) < getdmg("E",closeminion) and ValidTarget(closestminion, 125) then
-				CastSpell(_E, GetOrigin(closeminion))
-			end
-		end
-
-	end
-
-	-- JUNGLE CLEAR | LAST HIT
-	for i,mobs in pairs(minionManager.objects) do
-		if IOW:Mode() == "LaneClear" and GetTeam(mobs) == 300 then
-			if CanUseSpell(myHero, _Q) == READY and MundoMenu.JungleClear.Q:Value() and ValidTarget(mobs, 1000) then
-				CastSkillShot(_Q,GetOrigin(mobs))
-			end
-
-			if CanUseSpell(myHero, _W) == READY and MundoMenu.JungleClear.W:Value() and ValidTarget(mobs, 325) then
-				CastSpell(_W)
-			end
-
-			if CanUseSpell(myHero, _E) == READY and MundoMenu.JungleClear.E:Value() and ValidTarget(mobs, 125) then
-				CastSpell(_E)
-			end
-		end
-
-		if IOW:Mode() == "LastHit" and GetTeam(mobs) == MINION_ENEMY then
-			if CanUseSpell(myHero, _Q) == READY and ValidTarget(mobs, 1000) and MundoMenu.Lasthit.Q:Value() and GetCurrentHP(mobs) < getdmg("Q",mobs) then
-				CastSkillShot(_Q, GetOrigin(mobs))
-			end
-		end
-	end
-
-	-- AUTO SKILL LEVEL
-	if MundoMenu.Misc.Autolvl:Value() then  
-		
-		if GetLevel(myHero) > lastlevel then
-			if MundoMenu.Misc.Autolvltable:Value() == 1 then leveltable = {_Q, _E, _W, _Q, _Q, _R, _Q, _W, _Q, _W, _R, _W, _W, _E, _E, _R, _E, _E}
-				elseif MundoMenu.Misc.Autolvltable:Value() == 2 then leveltable = {_Q, _E, _W, _Q, _Q , _R, _Q , _E, _Q , _E, _R, _E, _E, _W, _W, _R, _W, _W}
-					DelayAction(function() LevelSpell(leveltable[GetLevel(myHero)]) end, math.random(1000,3000))
-					lastlevel = GetLevel(myHero)
+			-- AUTO CAST R
+			local myHeroCurrentHp = GetCurrentHP(myHero)
+			if  myHeroCurrentHp < (GetMaxHP(myHero)*(20*0.01)) then
+				if CanUseSpell(myHero, _R) then
+					CastSpell(_R)
 				end
 			end
 
 		end
 
-		end)
+		-- HARASS
+		if IOW:Mode() == "Harass" then
+			-- AUTO CAST Q
+			if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 then
+				CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+			end
+			-- AUTO CAST E
+			if CanUseSpell(myHero, _E) == READY and ValidTarget(target, 200) and MundoMenu.Combo.E:Value() then
+				CastSpell(_E)
+			end
+
+		end
+
+		-- AUTO IGNITE | KILL STEAL
+		for i,enemy in pairs(GetEnemyHeroes()) do
+
+			if Ignite and MundoMenu.Misc.Autoignite:Value() then
+				if IsReady(Ignite) and 20*GetLevel(myHero)+50 > GetHP(enemy)+GetHPRegen(enemy)*2.5 and ValidTarget(enemy, 600) then
+					CastTargetSpell(enemy, Ignite)
+				end
+			end
+
+			if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(target, 1050) and GetDistance(myHero, target) <= 999 and MundoMenu.Killsteal.Q:Value() and GetHP2(enemy) < getdmg("Q",enemy) then
+				CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+				elseif CanUseSpell(myHero, _E) == READY and ValidTarget(enemy, 200) and MundoMenu.Killsteal.E:Value() and GetHP2(enemy) < getdmg("E",enemy) then
+					CastSpell(_E)
+				end
+
+
+		end
+
+		-- LANE CLEAR
+		if IOW:Mode() == "LaneClear" then
+			local closeminion = ClosestMinion(GetOrigin(myHero), MINION_ENEMY)
+
+			if CanUseSpell(myHero, _Q) == READY and MundoMenu.LaneClear.Q:Value() then
+				if GetCurrentHP(closeminion) < getdmg("Q",closeminion) and ValidTarget(closeminion, 1000) then
+					CastSkillShot(_Q, GetOrigin(closeminion))
+				end
+			end
+
+			if GotBuff(myHero, "BurningAgony") ~= 1 then
+				if CanUseSpell(myHero, _W) == READY and ValidTarget(closeminion, 325) and MundoMenu.LaneClear.W:Value() then
+					CastSpell(_W)
+				end
+			end
+
+			if GotBuff(myHero, "BurningAgony") == 1 then
+				if CanUseSpell(myHero, _W) == READY and GetDistance(myHero, closeminion) >= 450 or ValidTarget(closeminion, 325) == nil and MundoMenu.LaneClear.W:Value() then
+					CastSpell(_W)
+				end
+			end
+
+			if CanUseSpell(myHero, _E) == READY and MundoMenu.LaneClear.E:Value() then
+				if GetCurrentHP(closeminion) < getdmg("E",closeminion) and ValidTarget(closeminion, 125) then
+					CastSpell(_E, GetOrigin(closeminion))
+				end
+			end
+
+		end
+
+		-- JUNGLE CLEAR | LAST HIT
+		for i,mobs in pairs(minionManager.objects) do
+			if IOW:Mode() == "LaneClear" and GetTeam(mobs) == 300 then
+				if CanUseSpell(myHero, _Q) == READY and MundoMenu.JungleClear.Q:Value() and ValidTarget(mobs, 1000) then
+					CastSkillShot(_Q,GetOrigin(mobs))
+				end
+
+				if CanUseSpell(myHero, _W) == READY and MundoMenu.JungleClear.W:Value() and ValidTarget(mobs, 325) then
+					CastSpell(_W)
+				end
+
+				if CanUseSpell(myHero, _E) == READY and MundoMenu.JungleClear.E:Value() and ValidTarget(mobs, 125) then
+					CastSpell(_E)
+				end
+			end
+
+			if IOW:Mode() == "LastHit" and GetTeam(mobs) == MINION_ENEMY then
+				if CanUseSpell(myHero, _Q) == READY and ValidTarget(mobs, 1000) and MundoMenu.Lasthit.Q:Value() and GetCurrentHP(mobs) < getdmg("Q",mobs) then
+					CastSkillShot(_Q, GetOrigin(mobs))
+				end
+			end
+		end
+
+		-- AUTO SKILL LEVEL
+		if MundoMenu.Misc.Autolvl:Value() then
+
+			if GetLevel(myHero) > lastlevel then
+				if MundoMenu.Misc.Autolvltable:Value() == 1 then leveltable = {_Q, _E, _W, _Q, _Q, _R, _Q, _W, _Q, _W, _R, _W, _W, _E, _E, _R, _E, _E}
+					elseif MundoMenu.Misc.Autolvltable:Value() == 2 then leveltable = {_Q, _E, _W, _Q, _Q , _R, _Q , _E, _Q , _E, _R, _E, _E, _W, _W, _R, _W, _W}
+						DelayAction(function() LevelSpell(leveltable[GetLevel(myHero)]) end, math.random(1000,3000))
+						lastlevel = GetLevel(myHero)
+					end
+				end
+
+			end
+
+		local OverAllDmgMundo = getdmg("Q",enemy) + getdmg("Q",enemy)
+		for i,unit in pairs(GetEnemyHeroes()) do
+		if ValidTarget(unit,20000) then
+		local enemyhp = GetCurrentHP(unit) + GetHPRegen(unit) + GetMagicShield(unit) + GetDmgShield(unit)
+		  if enemyhp < OverAllDmgMundo then
+		    DrawDmgOverHpBar(unit,enemyhp,0,OverAllDmgMundo,0xfffde782)
+		  elseif enemyhp > OverAllDmgMundo then
+		    DrawDmgOverHpBar(unit,enemyhp,0,OverAllDmgMundo,0xffffffff)
+		  end
+		end
+		end
+
+			end)
