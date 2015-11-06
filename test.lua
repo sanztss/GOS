@@ -5,7 +5,7 @@ if GetObjectName(GetMyHero()) ~= "DrMundo" then return end
 
 if not pcall( require, "Inspired" ) then PrintChat("You are missing Inspired.lua - Go download it and save it Common!") return end
 if not pcall( require, "DamageLib" ) then PrintChat("You are missing DamageLib.lua - Go download it and save it in Common!") return end
-
+PrintChat("Sage | DrMundo loaded.")
 local MundoMenu = Menu("DrMundo", "DrMundo")
 MundoMenu:SubMenu("Combo", "Combo")
 MundoMenu.Combo:Boolean("Q", "Use Q", true)
@@ -169,9 +169,17 @@ OnTick(function(myHero)
 					CastSkillShot(_Q,GetOrigin(mobs))
 				end
 
-				if CanUseSpell(myHero, _W) == READY and MundoMenu.JungleClear.W:Value() and ValidTarget(mobs, 325) then
-					CastSpell(_W)
-				end
+				-- if GotBuff(myHero, "BurningAgony") ~= 1 then
+				-- 	if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 325) and MundoMenu.JungleClear.W:Value() then
+				-- 		CastSpell(_W)
+				-- 	end
+				-- end
+
+				-- if GotBuff(myHero, "BurningAgony") == 1 then
+				-- 	if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 455) == nil and MundoMenu.JungleClear.W:Value() then
+				-- 		CastSpell(_W)
+				-- 	end
+				-- end
 
 				if CanUseSpell(myHero, _E) == READY and MundoMenu.JungleClear.E:Value() and ValidTarget(mobs, 125) then
 					CastSpell(_E)
@@ -198,16 +206,31 @@ OnTick(function(myHero)
 
 			end
 
-		local OverAllDmgMundo = getdmg("Q",enemy) + getdmg("Q",enemy)
-		for i,unit in pairs(GetEnemyHeroes()) do
-		if ValidTarget(unit,20000) then
-		local enemyhp = GetCurrentHP(unit) + GetHPRegen(unit) + GetMagicShield(unit) + GetDmgShield(unit)
-		  if enemyhp < OverAllDmgMundo then
-		    DrawDmgOverHpBar(unit,enemyhp,0,OverAllDmgMundo,0xfffde782)
-		  elseif enemyhp > OverAllDmgMundo then
-		    DrawDmgOverHpBar(unit,enemyhp,0,OverAllDmgMundo,0xffffffff)
-		  end
-		end
-		end
+		-- local OverAllDmgMundo = getdmg("Q",enemy) + getdmg("Q",enemy)
+		-- 	local enemyhp = GetCurrentHP(enemy) + GetHPRegen(enemy) + GetMagicShield(enemy) + GetDmgShield(enemy)
+
+					for _,unit in pairs(GetEnemyHeroes()) do
+						if not IsDead(unit) and ValidTarget(unit,6500) then
+							local hp = GetCurrentHP(unit) + GetMagicShield(unit) + GetDmgShield(unit)
+							local OverAllDmgMundo = getdmg("Q",enemy) + getdmg("Q",enemy)
+							if OverAllDmgMundo > hp then
+				        local hpbar = GetHPBarPos(myHero)
+								if hpbar.x > 0 then
+									if hpbar.y > 0 then
+											-- local myHeroPos = GetOrigin(myHero)
+								  	-- 	local myHeroWorld = WorldToScreen(1,myHeroPos.x,myHeroPos.y,myHeroPos.z)
+									  	local hp = GetCurrentHP(myHero)
+											local hPos = GetHPBarPos(myHero)
+											-- local unitPos = GetOrigin(myHero)
+											-- local drawPos = WorldToScreen(1,unitPos.x,unitPos.y,unitPos.z)
+								  		local enemyName = GetObjectName(unit)
+							        DrawText(GetObjectName(unit).." is ready to fly!!!", 20, hPos.x-30, hPos.y-50, 0xFF00BFFF)
+
+									end
+								end
+
+							end
+						end
+					end
 
 			end)
