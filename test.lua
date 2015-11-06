@@ -164,22 +164,22 @@ OnTick(function(myHero)
 
 		-- JUNGLE CLEAR | LAST HIT
 		for i,mobs in pairs(minionManager.objects) do
-			if IOW:Mode() == "LaneClear" and GetTeam(mobs) == 300 then
+			if IOW:Mode() == "LaneClear" and GetTeam(mobs) == 500 then
 				if CanUseSpell(myHero, _Q) == READY and MundoMenu.JungleClear.Q:Value() and ValidTarget(mobs, 1000) then
 					CastSkillShot(_Q,GetOrigin(mobs))
 				end
 
-				-- if GotBuff(myHero, "BurningAgony") ~= 1 then
-				-- 	if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 325) and MundoMenu.JungleClear.W:Value() then
-				-- 		CastSpell(_W)
-				-- 	end
-				-- end
+				if GotBuff(myHero, "BurningAgony") ~= 1 then
+					if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 325) and MundoMenu.JungleClear.W:Value() then
+						CastSpell(_W)
+					end
+				end
 
-				-- if GotBuff(myHero, "BurningAgony") == 1 then
-				-- 	if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 455) == nil and MundoMenu.JungleClear.W:Value() then
-				-- 		CastSpell(_W)
-				-- 	end
-				-- end
+				if GotBuff(myHero, "BurningAgony") == 1 then
+					if CanUseSpell(myHero, _W) == READY and ValidTarget(mobs, 455) == nil and MundoMenu.JungleClear.W:Value() then
+						CastSpell(_W)
+					end
+				end
 
 				if CanUseSpell(myHero, _E) == READY and MundoMenu.JungleClear.E:Value() and ValidTarget(mobs, 125) then
 					CastSpell(_E)
