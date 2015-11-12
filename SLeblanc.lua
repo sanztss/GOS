@@ -1,2 +1,2 @@
-if GetObjectName(GetMyHero()) ~= "LeBlanc" then return end
+if GetObjectName(myHero) ~= "LeBlanc" then return end
 PrintChat("Sage | LeBlanc loaded.")
